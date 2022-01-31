@@ -11,6 +11,7 @@
     <title>画像結合</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="shortcut icon" href="favicon.ico">
+
 </head>
 
 <body>
@@ -27,10 +28,16 @@
 
     一枚目
 	<input type="file" id="input1"><br>
+    一枚目A
+	<input type="file" id="input1a"><br>
     二枚目
     <input type="file" id="input2"><br>
+    二枚目A
+	<input type="file" id="input2a"><br>
     三枚目
     <input type="file" id="input3"><br>
+    三枚目A
+	<input type="file" id="input3a"><br>
     <input type="button" value="トリミング" onclick="trim()"><br>
     <input type="button" value="download" onclick="download()"><br>
     <span id="span200"></span><br>
@@ -41,38 +48,34 @@
 <script>
 
 const list = [
-    [1334,750,16,65,515,100,480,"iphone8"],
-    [2400,1080,270,93,720,280,520,"GalaxyA51"],
-    [1920,1080,25,97,720,310,507,"iphone8plus"],
-    [2220,1080,175,92,708,280,520,"iphone12mini"],
-    [2182,1034,184,88,675,275,488,"pad"],
-    [2048,946,206,81,615,251,445,"pad"]
+    [2400,1080,265,97,288,592,622,800,"GalaxyA51"],
+    [111,1111,11,1,1,1,1],
+    [111,1111,11,1,1,1,1]
+]
 
-    
-  ]
+//[Origin_X,Origin_Y,sx,sy,sy3,sy2,h2,h3,機種名]
 //[画面長い方,画面短い方,
-//1枚目切り抜き位置横からsx,1枚目切り抜き位置上からsy,1枚目切り抜きサイズ縦方向sHeight,
-//23枚目切り抜き位置上からsy2,23枚目切り抜きサイズ縦方向方sHeight2,機種名]
-//sWidthは全長(横)-sx*2
-//sx2はsxと変わらない
 
 const img1 = new Image();
+const img1a = new Image();
 const img2 = new Image();
+const img2a = new Image();
 const img3 = new Image();
-let oWidth = 0;
-let oHeight = 0;
-let sx = 0;
-let sy = 0;
-let sWidth = 0;
-let sHeight = 0;
-let dx = 0;
-let dy = 0;
-let dWidth = 0;
-let dHeight = 0;
+const img3a = new Image();
+let Origin_X = 0;
+let Origin_Y = 0;
+let sx1 = 0;
+let sy1 = 0;
+let sw1 = 0;
+let sh1 = 0;
 let sx2 = 0;
 let sy2 = 0;
-let sWidth2 = 0;
-let sHeight2 = 0;
+let sw2 = 0;
+let sh2 = 0;
+let sx3 = 0;
+let sy3 = 0;
+let sw3 = 0;
+let sh3 = 0;
 let mobile = "name"
 let __count__ = 0;
 
@@ -92,6 +95,21 @@ document.getElementById( "input1" ).onchange = function () {
 	}
 }
 
+document.getElementById( "input1a" ).onchange = function () {
+	var fileReader = new FileReader() ;
+    //fileのパス
+	var file = input1a.files[0] ;
+    //fileをdata: URL の文字列に
+	fileReader.readAsDataURL( file ) ;
+
+    //fileを読み込んで扱う
+    fileReader.onload = function () {
+        img1a.src = this.result ;
+        console.log(this.result);
+        console.log("img1aだよ");
+	}
+}
+
 document.getElementById( "input2" ).onchange = function () {
 	var fileReader = new FileReader() ;
     //fileのパス
@@ -106,6 +124,22 @@ document.getElementById( "input2" ).onchange = function () {
         console.log("img2だよ");
 	}
     __count__ = 1
+}
+
+document.getElementById( "input2a" ).onchange = function () {
+	var fileReader = new FileReader() ;
+    //fileのパス
+	var file = input2a.files[0] ;
+    //fileをdata: URL の文字列に
+	fileReader.readAsDataURL( file ) ;
+
+    //fileを読み込んで扱う
+    fileReader.onload = function () {
+        img2a.src = this.result ;
+        console.log(this.result);
+        console.log("img2aだよ");
+	}
+    //__count__ = 1
 }
 
 document.getElementById( "input3" ).onchange = function () {
@@ -125,31 +159,51 @@ document.getElementById( "input3" ).onchange = function () {
     __count__ = 2
 }
 
+document.getElementById( "input3a" ).onchange = function () {
+	var fileReader = new FileReader() ;
+    //fileのパス
+	var file = input3a.files[0] ;
+    //fileをdata: URL の文字列に
+	fileReader.readAsDataURL( file ) ;
+
+    //fileを読み込んで扱う
+    fileReader.onload = function () {
+        img3a.src = this.result ;
+        console.log(this.result);
+        console.log("img3aだよ");
+	}
+
+    //__count__ = 2
+}
+
 
 function trim() {
-    //読み込んだ画像サイズ owidth,oheifhtから（OriginalのO)
-    //予め測定しリスト化してあるsx,sy,sWidth,sHeightが固定値
-    //dx,dyば一枚目から0,0次はsW,sH,次が2sW,2sH
-    //sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight
-    oWidth = img1.width
-    oHeight = img1.height
+    Origin_X = img1.width
+    Origin_Y = img1.height
     console.log(img1.width);
     console.log(img1.height);
 
    // あらかじめ配列[oWidth,oHeight,sx, sy, sWidth, sHeight]があって、読み込んだ画像のoWithとoHeightと比べて同じもののを採用する。
    for (let i = 0; i < list.length; i++){
-       if (list[i][0] == oWidth && list[i][1] == oHeight){
+       if (list[i][0] == Origin_X && list[i][1] == Origin_Y){
            console.log(i +"一致した")
-           sx = list[i][2];
-           sy = list[i][3];
-           sHeight = list[i][4];
+           //[Origin_X,Origin_Y,sx,sy,sy3,sy2,h2,h3,機種名]
+           sx1 = list[i][2];
+           sy1 = list[i][3];
+           sy3 = list[i][4];
            sy2 = list[i][5];
-           sHeight2 = list[i][6];
-           mobile = list[i][7];
+           h2 = list[i][6];
+           h3 = list[i][7];
+           mobile = list[i][8];
 
-           sWidth = oWidth - sx * 2;
-           sx2 = sx;
-           sWidth2 = sWidth;
+           sx2 = sx1
+           sx3 = sx1
+           sw1 = Origin_X - sx1 - sx1
+           sw2 = Origin_X - sx1 - sx1
+           sw3 = Origin_X - sx1 - sx1
+           sh1 = h3 - sy1
+           sh2 = h2 - sy2
+           sh3 = h3 - sy3       
 
            document.getElementById("span200").textContent = "端末名:" + mobile;
        }
@@ -158,16 +212,22 @@ function trim() {
 
     //描画コンテキストの取得
     var canvas = document.getElementById('result');
-    canvas.setAttribute("width", sWidth);
-    canvas.setAttribute("height", sHeight + 2 + sHeight2 * __count__);
+    canvas.setAttribute("width", sw1);
+    canvas.setAttribute("height", sh1 + 2 + sh3 * __count__);
     var context = canvas.getContext('2d');
     //context.drawImage(img1, sx,sy); //うまくいく
-    context.drawImage(img1, sx, sy, sWidth, sHeight, 0, 0, sWidth, sHeight);
-
-    context.drawImage(img2, sx2, sy2, sWidth2, sHeight2, 0, sHeight+1, sWidth2, sHeight2);
-    
-    context.drawImage(img3, sx2, sy2, sWidth2, sHeight2, 0, sHeight+sHeight2, sWidth2, sHeight2);
-  
+    //一枚目
+    context.drawImage(img1, sx1, sy1, sw1, sh1, 0, 0, sw1, sh1);
+    //一枚目A
+    context.drawImage(img1a, sx2, sy2, sw2, sh2, 0, sy2-sy1-sh2, sw2, sh2);
+    //二枚目
+    context.drawImage(img2, sx3, sy3, sw3, sh3, 0, sh1+1, sw3, sh3);
+    //二枚目A
+    context.drawImage(img2a, sx2, sy2, sw2, sh2, 0, sy2-sy3-sh2+sh1, sw2, sh2);
+    //三枚目
+    context.drawImage(img3, sx3, sy3, sw3, sh3, 0, sh1+sh3, sw3, sh3); 
+    //三枚目A
+    context.drawImage(img3a, sx2, sy2, sw2, sh2, 0, sy2-sy3-sh2+sh1+sh3, sw2, sh2);
 }
 
 function download(){
