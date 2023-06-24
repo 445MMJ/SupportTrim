@@ -1,244 +1,141 @@
 <!DOCTYPE html>
-
-<html lang="ja">
+<html>
 
 <head>
-    <meta charset="utf-8" />
+
+    <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>画像結合</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+
+    <link rel="stylesheet" href="css/cropper.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- Bootstrap用CSSの読み込み -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
 
+
 <body>
+    <header data-bs-theme="dark">
+        <div class="collapse text-bg-dark" id="Navbar">
+            <div class="container py-4">
+                <h4>概要</h4>
+                <p class="text-body-secondary">
+                    なんか説明を書いたり書かなかったりする
+                </p>
+            </div>
+        </div>
+        </div>
+        <div class="navbar bg-body-secondary shadow-sm" data-bs-theme="dark">
+            <div class="container">
+                <a href="#" class="navbar-brand d-flex align-items-center">
+                    <strong>フレ募用画像結合</strong>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#Navbar"
+                    aria-controls="Navbar" aria-expanded="false" aria-label="ナビゲーションの切替">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <style>
-        html {
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  font-size: 16 px;/*rem算出をしやすくするために*/
-  line-height:1.2rem; 
-  touch-action: manipulation;/*ダブルタップ暴発防止*/
-}
-    </style>
-
-    一枚目
-	<input type="file" id="input1"><br>
-    一枚目A
-	<input type="file" id="input1a"><br>
-    二枚目
-    <input type="file" id="input2"><br>
-    二枚目A
-	<input type="file" id="input2a"><br>
-    三枚目
-    <input type="file" id="input3"><br>
-    三枚目A
-	<input type="file" id="input3a"><br>
-    <input type="button" value="トリミング" onclick="trim()"><br>
-    <input type="button" value="download" onclick="download()"><br>
-    <span id="span200"></span><br>
-    <canvas width="100" height="100" id="result" ></canvas>
-
-
-
-<script>
-
-const list = [
-    [2400,1080,265,97,288,592,622,800,"GalaxyA51"],
-    [111,1111,11,1,1,1,1],
-    [111,1111,11,1,1,1,1]
-]
-
-//[Origin_X,Origin_Y,sx,sy,sy3,sy2,h2,h3,機種名]
-//[画面長い方,画面短い方,
-
-const img1 = new Image();
-const img1a = new Image();
-const img2 = new Image();
-const img2a = new Image();
-const img3 = new Image();
-const img3a = new Image();
-let Origin_X = 0;
-let Origin_Y = 0;
-let sx1 = 0;
-let sy1 = 0;
-let sw1 = 0;
-let sh1 = 0;
-let sx2 = 0;
-let sy2 = 0;
-let sw2 = 0;
-let sh2 = 0;
-let sx3 = 0;
-let sy3 = 0;
-let sw3 = 0;
-let sh3 = 0;
-let mobile = "name"
-let __count__ = 0;
-
-
-document.getElementById( "input1" ).onchange = function () {
-	var fileReader = new FileReader() ;
-    //fileのパス
-	var file = input1.files[0] ;
-    //fileをdata: URL の文字列に
-	fileReader.readAsDataURL( file ) ;
-
-    //fileを読み込んで扱う
-    fileReader.onload = function () {
-        img1.src = this.result ;
-        console.log(this.result);
-        console.log("img1だよ");
-	}
-}
-
-document.getElementById( "input1a" ).onchange = function () {
-	var fileReader = new FileReader() ;
-    //fileのパス
-	var file = input1a.files[0] ;
-    //fileをdata: URL の文字列に
-	fileReader.readAsDataURL( file ) ;
-
-    //fileを読み込んで扱う
-    fileReader.onload = function () {
-        img1a.src = this.result ;
-        console.log(this.result);
-        console.log("img1aだよ");
-	}
-}
-
-document.getElementById( "input2" ).onchange = function () {
-	var fileReader = new FileReader() ;
-    //fileのパス
-	var file = input2.files[0] ;
-    //fileをdata: URL の文字列に
-	fileReader.readAsDataURL( file ) ;
-
-    //fileを読み込んで扱う
-    fileReader.onload = function () {
-        img2.src = this.result ;
-        console.log(this.result);
-        console.log("img2だよ");
-	}
-    __count__ = 1
-}
-
-document.getElementById( "input2a" ).onchange = function () {
-	var fileReader = new FileReader() ;
-    //fileのパス
-	var file = input2a.files[0] ;
-    //fileをdata: URL の文字列に
-	fileReader.readAsDataURL( file ) ;
-
-    //fileを読み込んで扱う
-    fileReader.onload = function () {
-        img2a.src = this.result ;
-        console.log(this.result);
-        console.log("img2aだよ");
-	}
-    //__count__ = 1
-}
-
-document.getElementById( "input3" ).onchange = function () {
-	var fileReader = new FileReader() ;
-    //fileのパス
-	var file = input3.files[0] ;
-    //fileをdata: URL の文字列に
-	fileReader.readAsDataURL( file ) ;
-
-    //fileを読み込んで扱う
-    fileReader.onload = function () {
-        img3.src = this.result ;
-        console.log(this.result);
-        console.log("img3だよ");
-	}
-
-    __count__ = 2
-}
-
-document.getElementById( "input3a" ).onchange = function () {
-	var fileReader = new FileReader() ;
-    //fileのパス
-	var file = input3a.files[0] ;
-    //fileをdata: URL の文字列に
-	fileReader.readAsDataURL( file ) ;
-
-    //fileを読み込んで扱う
-    fileReader.onload = function () {
-        img3a.src = this.result ;
-        console.log(this.result);
-        console.log("img3aだよ");
-	}
-
-    //__count__ = 2
-}
+    <div class="container">
+        <div class="ex mb-3 mt-3 ">
+            <div class="boarder">
+                <span id="msg1">(1)使用したい画像を2-6枚登録し、「画像読み込みボタン」を押す</span><br>
+                <span id="msg2">(2)トリミングタブでアペンドスキル部分を選択し、「アペンド位置を決める」ボタンを押す</span><br>
+                <span id="msg3">(3)プレビュータブにアペンドスキル部分が合成された画像が出てくる。個別に保存してください</span><br>
+            </div>
+        </div>
+        <div class="UI mb-3 boarder">
+            <div class="row">
+                <div class="mb-3 col-sm">
+                    <label for="formFile" class="form-label">1枚目(必須)</label>
+                    <input type="file" class="img1 form-control" id="input1">
+                </div>
+                <div class="mb-3 col-sm">
+                    <label for="formFile" class="form-label">1枚目アペンド</label>
+                    <input type="file" class="img1_ap form-control" id="input1_ap">
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-sm">
+                    <label for="formFile" class="form-label">2枚目</label>
+                    <input type="file" class="img2 form-control" id="input2">
+                </div>
+                <div class="mb-3 col-sm">
+                    <label for="formFile" class="form-label">2枚目アペンド</label>
+                    <input type="file" class="img2_ap form-control" id="input2_ap">
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-sm">
+                    <label for="formFile" class="form-label">3枚目</label>
+                    <input type="file" class="img3 form-control" id="input3">
+                </div>
+                <div class="mb-3 col-sm">
+                    <label for="formFile" class="form-label">3枚目アペンド</label>
+                    <input type="file" class="img3_ap form-control" id="input3_ap">
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary mb-3 .d-inline" id="first_done">画像読みこみ</button>
+            <button type="button" class="btn btn-primary mb-3 .d-inline" id="second_done">アペンド位置を決める</button>
 
 
-function trim() {
-    Origin_X = img1.width
-    Origin_Y = img1.height
-    console.log(img1.width);
-    console.log(img1.height);
+        </div>
+        <div class="tb mb-3 boarder bg-secondary-subtle">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#trimer" data-bs-toggle="tab">トリミング</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#preview" data-bs-toggle="tab">プレビュー</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="trimer" class="tab-pane active">
+                    トリムだよ
+                    <img id="trim" src="">
+                </div>
+                <div id="preview" class="tab-pane">
+                    プレビューだよ
+                    <canvas id="canvas"></canvas>
+                    <canvas id="canvas2"></canvas>
+                    <canvas id="canvas3"></canvas>
+                    <canvas id="canvas4"></canvas>
+                </div>
+            </div>
+        </div>
 
-   // あらかじめ配列[oWidth,oHeight,sx, sy, sWidth, sHeight]があって、読み込んだ画像のoWithとoHeightと比べて同じもののを採用する。
-   for (let i = 0; i < list.length; i++){
-       if (list[i][0] == Origin_X && list[i][1] == Origin_Y){
-           console.log(i +"一致した")
-           //[Origin_X,Origin_Y,sx,sy,sy3,sy2,h2,h3,機種名]
-           sx1 = list[i][2];
-           sy1 = list[i][3];
-           sy3 = list[i][4];
-           sy2 = list[i][5];
-           h2 = list[i][6];
-           h3 = list[i][7];
-           mobile = list[i][8];
-
-           sx2 = sx1
-           sx3 = sx1
-           sw1 = Origin_X - sx1 - sx1
-           sw2 = Origin_X - sx1 - sx1
-           sw3 = Origin_X - sx1 - sx1
-           sh1 = h3 - sy1
-           sh2 = h2 - sy2
-           sh3 = h3 - sy3       
-
-           document.getElementById("span200").textContent = "端末名:" + mobile;
-       }
-
-   }
-
-    //描画コンテキストの取得
-    var canvas = document.getElementById('result');
-    canvas.setAttribute("width", sw1);
-    canvas.setAttribute("height", sh1 + 2 + sh3 * __count__);
-    var context = canvas.getContext('2d');
-    //context.drawImage(img1, sx,sy); //うまくいく
-    //一枚目
-    context.drawImage(img1, sx1, sy1, sw1, sh1, 0, 0, sw1, sh1);
-    //一枚目A
-    context.drawImage(img1a, sx2, sy2, sw2, sh2, 0, sy2-sy1-sh2, sw2, sh2);
-    //二枚目
-    context.drawImage(img2, sx3, sy3, sw3, sh3, 0, sh1+1, sw3, sh3);
-    //二枚目A
-    context.drawImage(img2a, sx2, sy2, sw2, sh2, 0, sy2-sy3-sh2+sh1, sw2, sh2);
-    //三枚目
-    context.drawImage(img3, sx3, sy3, sw3, sh3, 0, sh1+sh3, sw3, sh3); 
-    //三枚目A
-    context.drawImage(img3a, sx2, sy2, sw2, sh2, 0, sy2-sy3-sh2+sh1+sh3, sw2, sh2);
-}
-
-function download(){
-    let canvas = document.getElementById("result");
-    let link = document.createElement("a");
-    link.href = canvas.toDataURL("image/png");
-    link.download = "result.png";
-    link.click();
-}
+        <div class="workspace">
+            <img id="img1" class="hidden">
+            <img id="img1_ap" class="hidden">
+            <img id="img2" class="hidden">
+            <img id="img2_ap" class="hidden">
+            <img id="img3" class="hidden">
+            <img id="img3_ap" class="hidden">
+        </div>
 
 
-</script>
+
+
+        <script src="scr/cropper.js"></script>
+        <script src="scr/main.js"></script>
+
+        <!-- Bootstrap用JavaScriptの読み込み -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+
 </body>
+
 </html>
